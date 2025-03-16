@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Autoridade e Conservadorismo</title>
+</head>
+<body>
+    <h1>Gráfico Radar</h1>
+    <div id="radar-chart"></div>
+
+    <h1>Gráfico de Linha</h1>
+    <div id="line-chart"></div>
+
+    <script>
+        async function fetchChart(url, divId) {
+            const response = await fetch(url);
+            const data = await response.json();
+            Plotly.newPlot(divId, JSON.parse(data.chart).data, JSON.parse(data.chart).layout);
+        }
+        
+        fetchChart("/radar", "radar-chart");
+        fetchChart("/line", "line-chart");
+    </script>
+</body>
+</html>
