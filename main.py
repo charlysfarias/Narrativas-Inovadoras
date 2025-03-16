@@ -1,31 +1,26 @@
-from fastapi import FastAPI
+from flask import Flask, render_template
 import matplotlib.pyplot as plt
 import io
 import base64
-import numpy as np
-import plotly.express as px
-import pandas as pd
 
-app = FastAPI()
+app = Flask(__name__)
 
-def generate_radar_chart():
-    labels = ["A", "B", "C", "D", "E"]
-    values = [4, 7, 3, 8, 6]
-    
-    fig = px.line_polar(r=dict(zip(labels, values)), theta=labels, line_close=True)
-    return fig.to_json()
+def criar_grafico():
+    plt.figure()
+    x = [1, 2, 3, 4, 5]
+    y = [10, 20, 25, 30, 40]
+    plt.plot(x, y, marker='o')
+    plt.title("Exemplo de Gráfico")
 
-def generate_line_chart():
-    x = np.linspace(0, 10, 100)
-    y = np.sin(x)
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    img.seek(0)
+    return base64.b64encode(img.getvalue()).decode()
 
-    fig = px.line(x=x, y=y, labels={"x": "Time", "y": "Value"})
-    return fig.to_json()
+@app.route("/")
+def home():
+    grafico = criar_grafico()
+    return f'<img src="data:image/png;base64,{grafico}" />'
 
-@app.get("/radar")
-async def radar_chart():
-    return {"chart": generate_radar_chart()}
-
-@app.get("/line")
-async def line_chart():
-    return {"chart": generate_line_chart()}
+if __name__ == "__main__":
+    app.run(debug=True)
